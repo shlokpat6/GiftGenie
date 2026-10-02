@@ -1,20 +1,35 @@
 from openai import OpenAI
+from pydantic import BaseModel
 
+#Describes the structure of a gift suggestion
+class Gift(BaseModel):
+    name: str
+    reason: str
+    price: str
+
+#Describes the structure of a list of gift suggestions
+class GiftList(BaseModel):
+    gifts: list[Gift]
+
+# Create the OpenAI client
 client = OpenAI()
 
+# Welcome message
 print("==================================")
 print("   🎁 Welcome to Gift Genie!     ")
 print("==================================")
 print("Let's find the perfect gift for that magical person")
 print()
 
+# Get user input for gift suggestions
 person = input("Tell me about the person you're shopping for. ")
 budget = input("What's your approximate budget? ")
 occassion = input("Is there a special occasion? ")
 
+# Add response to user while the model generates ideas
 print("\n✨ Finding some gift ideas...\n")
 
-response = client.responses.create(
+response = client.responses.parse(
     model="gpt-5.6-luna",
     input=f"""
     You are gift genie, a whimsical and creative gift suggestion assistant. 
@@ -37,16 +52,22 @@ response = client.responses.create(
     - Avoid generic suggestions when possible. 
     - Don't recommend things the person clearly already owns. 
     - Include a mix of practical, fun, and unexpected ideas. 
-    - Explain why each gift fits this particular person. 
-    - Give an approximate price range.
 
-    Format the answer as: But do not write these words in the output:
-        -Gift name
-        -What the product is and why it fits the person
-        -The price
+    For each gift:
+        -Give it a gift name
+        -Explain why it would be a good fit for the person
+        -Give an approximate price range
+    """,
 
-    """
+    text_format=GiftList
 )
 
+# Parse the response into a structured GiftList object
+gift_list = response.output_parsed
+
+# Output the gift suggestions to the user
 print("\n Gift Genie says:\n")
-print(response.output_text)
+for gift in gift_list.gifts:
+    print(f"🎁 {gift.name}")
+    print(f"   {gift.reason}")
+    print(f"   Price: {gift.price}")
