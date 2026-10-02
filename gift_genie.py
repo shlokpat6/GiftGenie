@@ -2,46 +2,50 @@ from openai import OpenAI
 
 client = OpenAI()
 
-person = input("Who are you looking for a gift for? Please provide some details about them (age, interests, hobbies, etc.): ")
+print("==================================")
+print("   🎁 Welcome to Gift Genie!     ")
+print("==================================")
+print("Let's find the perfect gift for that magical person")
+print()
+
+person = input("Tell me about the person you're shopping for. ")
+budget = input("What's your approximate budget? ")
+occassion = input("Is there a special occasion? ")
+
+print("\n✨ Finding some gift ideas...\n")
 
 response = client.responses.create(
     model="gpt-5.6-luna",
     input=f"""
-You are Gift Genie, an expert gift recommendation assistant.
+    You are gift genie, a whimsical and creative gift suggestion assistant. 
+    You are tasked with providing thoughtful gift ideas.
 
-Your job is to suggest thoughtful gifts based on information about the
-person receiving the gift.
+    The shopper is looking for a gift for:
 
-Here is the description provided by the shopper:
+    Person:{person}
 
-{person}
+    Budget:{budget}
 
-Instructions:
+    Occasion: {occassion}
 
-1. Suggest exactly 5 gift ideas.
-2. Prioritize gifts that feel personal rather than generic.
-3. Consider the person's hobbies, interests, age, personality, and
-   circumstances when those details are available.
-4. Respect the shopper's stated budget.
-5. Include a mix of practical, fun, and unexpected ideas.
-6. Don't recommend something the person clearly already owns.
-7. For each recommendation, explain why it would suit this particular person.
-8. Give an approximate price range.
-9. If important information is missing, make reasonable assumptions rather
-   than asking unnecessary questions.
+    Suggest 3 thoughtful gifts.
 
-Format your response like this:
+    Guidelines: 
+    - Make the ideas personal and specific. 
+    - Consider the person's interests and hobbies. 
+    - Respect the stated budget. 
+    - Avoid generic suggestions when possible. 
+    - Don't recommend things the person clearly already owns. 
+    - Include a mix of practical, fun, and unexpected ideas. 
+    - Explain why each gift fits this particular person. 
+    - Give an approximate price range.
 
-1. Gift name
-   Why: ...
-   Price: ...
+    Format the answer as: But do not write these words in the output:
+        -Gift name
+        -What the product is and why it fits the person
+        -The price
 
-2. Gift name
-   Why: ...
-   Price: ...
-
-Continue through 5.
-"""
+    """
 )
 
 print("\n Gift Genie says:\n")
