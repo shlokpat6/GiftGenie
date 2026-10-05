@@ -18,10 +18,11 @@ client = OpenAI()
 
 # Gift Genie
 def find_gifts(person, budget, occasion):
-
     response = client.responses.parse(
         model="gpt-5.6-luna",
-
+        tools=[
+            {"type": "web_search"}
+        ],
         input=f"""
         You are Gift Genie, an expert gift recommendation assistant.
 
@@ -36,20 +37,20 @@ def find_gifts(person, budget, occasion):
         OCCASION:
         {occasion}
 
+        Search the web for current products that would make good gifts.
+
         Suggest exactly 5 thoughtful gift ideas.
 
         Make the ideas personal and specific.
         Consider the person's interests and hobbies.
         Respect the stated budget.
         Avoid generic suggestions when possible.
-        Don't recommend things the person clearly already owns.
 
         For each gift:
-        - Give it a name.
+        - Give the specific product name.
         - Explain why it fits the person.
-        - Give an approximate price.
+        - Give the approximate current price.
         """,
-
         text_format=GiftList
     )
 

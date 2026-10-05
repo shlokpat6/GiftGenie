@@ -47,13 +47,8 @@ if st.button("✨ Find Gift Ideas"):
 
         # Display results
         st.subheader("✨ Gift Ideas")
-
         for gift in gifts.gifts:
-
             st.markdown(f"### 🎁 {gift.name}")
-
             st.write(f"**Why:** {gift.reason}")
-
             st.write(f"**Price:** {gift.price}")
-
             st.divider()
