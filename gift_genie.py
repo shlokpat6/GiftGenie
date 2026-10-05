@@ -1,5 +1,8 @@
+import logging
 import streamlit as st
 from genie import find_gifts
+
+logger = logging.getLogger(__name__)
 
 # Page
 st.title("🎁 Gift Genie")
@@ -37,18 +40,19 @@ if st.button("✨ Find Gift Ideas"):
 
     else:
 
-        with st.spinner("Finding some great ideas..."):
+        try:
+            logger.info("Starting gift search")
+            with st.spinner("Finding some great ideas..."):
+                gifts = find_gifts(person, budget, occasion)
+        except Exception:
+            logger.exception("Gift search failed")
+            st.error("Sorry, something went wrong. Please try again.")
+        else:
+            logger.info("Gift search completed successfully")
+            st.subheader("✨ Gift Ideas")
 
-            gifts = find_gifts(
-                person,
-                budget,
-                occasion
-            )
-
-        # Display results
-        st.subheader("✨ Gift Ideas")
-        for gift in gifts.gifts:
-            st.markdown(f"### 🎁 {gift.name}")
-            st.write(f"**Why:** {gift.reason}")
-            st.write(f"**Price:** {gift.price}")
-            st.divider()
+            for gift in gifts.gifts:
+                st.markdown(f"### 🎁 {gift.name}")
+                st.write(f"**Why:** {gift.reason}")
+                st.write(f"**Price:** {gift.price}")
+                st.divider()
