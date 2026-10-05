@@ -1,8 +1,10 @@
 import logging
 import streamlit as st
+from openai import OpenAI
 from genie import find_gifts
 
 logger = logging.getLogger(__name__)
+client = OpenAI()
 
 # Page
 st.title("🎁 Gift Genie")
@@ -43,7 +45,7 @@ if st.button("✨ Find Gift Ideas"):
         try:
             logger.info("Starting gift search")
             with st.spinner("Finding some great ideas..."):
-                gifts = find_gifts(person, budget, occasion)
+                gifts = find_gifts(person, budget, occasion, client)
         except Exception:
             logger.exception("Gift search failed")
             st.error("Sorry, something went wrong. Please try again.")

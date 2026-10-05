@@ -12,12 +12,8 @@ class Gift(BaseModel):
 class GiftList(BaseModel):
     gifts: list[Gift]
 
-
-# OpenAI client
-client = OpenAI()
-
 # Gift Genie
-def find_gifts(person, budget, occasion):
+def find_gifts(person, budget, occasion, client):
     response = client.responses.parse(
         model="gpt-5.6-luna",
         tools=[
