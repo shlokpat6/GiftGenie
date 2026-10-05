@@ -1,67 +1,59 @@
-from openai import OpenAI
-from pydantic import BaseModel
 import streamlit as st
+from genie import find_gifts
 
-#Describes the structure of a gift suggestion
-class Gift(BaseModel):
-    name: str
-    reason: str
-    price: str
+# Page
+st.title("🎁 Gift Genie")
 
-#Describes the structure of a list of gift suggestions
-class GiftList(BaseModel):
-    gifts: list[Gift]
+st.write(
+    "Tell me about someone you're shopping for, "
+    "and I'll suggest some gifts."
+)
 
-# Create the OpenAI client
-client = OpenAI()
+# User input
+person = st.text_area(
+    "Tell me about the person",
+    placeholder=(
+        "Example: My brother is 32, loves hiking, "
+        "cooking, and photography..."
+    )
+)
 
-st.title("🧞 Gift Genie")
-st.write("Welcome to Gift Genie! Let's find the perfect gift for that magical person.")
+budget = st.text_input(
+    "What's your budget?",
+    placeholder="$75"
+)
 
-# Get user input for gift suggestions
-person = st.text_area("Tell me about the person you're shopping for.", placeholder="My brother who loves hiking and photography.")
-budget = st.text_input("What's your approximate budget?", placeholder="$50-$100")
-occassion = st.text_input("Is there a special occasion? ", placeholder="Birthday, Anniversary, none, etc.")
+occasion = st.text_input(
+    "What's the occasion?",
+    placeholder="Birthday"
+)
 
-# Generate gift suggestions using the OpenAI API, but parsing the response into a structured GiftList object
-if st.button("✨ Rub the lamp"):
-    with st.spinner("✨ This wise genie is thinking hard..."):
-        response = client.responses.parse(
-            model="gpt-5.6-luna",
-            input=f"""
-            You are gift genie, a whimsical and creative gift suggestion assistant. 
-            You are tasked with providing thoughtful gift ideas.
+# Generate gifts
+if st.button("✨ Find Gift Ideas"):
 
-            The shopper is looking for a gift for:
+    if not person:
 
-            Person:{person}
+        st.warning("Please tell me about the person first.")
 
-            Budget:{budget}
+    else:
 
-            Occasion: {occassion}
+        with st.spinner("Finding some great ideas..."):
 
-            Suggest 3 thoughtful gifts.
+            gifts = find_gifts(
+                person,
+                budget,
+                occasion
+            )
 
-            Guidelines: 
-            - Make the ideas personal and specific. 
-            - Consider the person's interests and hobbies. 
-            - Respect the stated budget. 
-            - Avoid generic suggestions when possible. 
-            - Don't recommend things the person clearly already owns. 
-            - Include a mix of practical, fun, and unexpected ideas. 
+        # Display results
+        st.subheader("✨ Gift Ideas")
 
-            For each gift:
-                -Give it a gift name
-                -Explain why it would be a good fit for the person
-                -Give an approximate price range
-            """,
+        for gift in gifts.gifts:
 
-            text_format=GiftList
-        )
+            st.markdown(f"### 🎁 {gift.name}")
 
-        # Output the gift suggestions to the user
-        st.subheader("Gift Genie Says")
-        for gift in response.output_parsed.gifts:
-            st.markdown(f"🎁 {gift.name}")
-            st.write(f"{gift.reason}")
-            st.write(f"{gift.price}")
+            st.write(f"**Why:** {gift.reason}")
+
+            st.write(f"**Price:** {gift.price}")
+
+            st.divider()
