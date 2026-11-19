@@ -2,6 +2,8 @@ import logging
 import streamlit as st
 from openai import OpenAI
 from genie import find_gifts
+from dotenv import load_dotenv
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 client = OpenAI()

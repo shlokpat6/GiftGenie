@@ -3,3 +3,4 @@ pydantic
 streamlit
 pytest
 logging
+python-dotenv
